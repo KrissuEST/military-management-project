@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DAL.EF.App.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230617122702_Initial")]
+    [Migration("20230622142651_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -117,7 +117,7 @@ namespace DAL.EF.App.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.App.MilitaryActivity", b =>
+            modelBuilder.Entity("Domain.App.MilitaryPlan", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -126,11 +126,16 @@ namespace DAL.EF.App.Migrations
                     b.Property<Guid>("AppUserId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("PlanName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId");
 
-                    b.ToTable("MilitaryActivities");
+                    b.ToTable("MilitaryPlans");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -236,12 +241,12 @@ namespace DAL.EF.App.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.App.MilitaryActivity", b =>
+            modelBuilder.Entity("Domain.App.MilitaryPlan", b =>
                 {
                     b.HasOne("Domain.App.Identity.AppUser", "AppUser")
                         .WithMany("MilitaryActivities")
                         .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("AppUser");
@@ -252,7 +257,7 @@ namespace DAL.EF.App.Migrations
                     b.HasOne("Domain.App.Identity.AppRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -261,7 +266,7 @@ namespace DAL.EF.App.Migrations
                     b.HasOne("Domain.App.Identity.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -270,7 +275,7 @@ namespace DAL.EF.App.Migrations
                     b.HasOne("Domain.App.Identity.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -279,13 +284,13 @@ namespace DAL.EF.App.Migrations
                     b.HasOne("Domain.App.Identity.AppRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.App.Identity.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -294,7 +299,7 @@ namespace DAL.EF.App.Migrations
                     b.HasOne("Domain.App.Identity.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 

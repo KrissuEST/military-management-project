@@ -69,7 +69,7 @@ namespace DAL.EF.App.Migrations
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -90,7 +90,7 @@ namespace DAL.EF.App.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -110,7 +110,7 @@ namespace DAL.EF.App.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -128,13 +128,13 @@ namespace DAL.EF.App.Migrations
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -154,25 +154,26 @@ namespace DAL.EF.App.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "MilitaryActivities",
+                name: "MilitaryPlans",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PlanName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     AppUserId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MilitaryActivities", x => x.Id);
+                    table.PrimaryKey("PK_MilitaryPlans", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MilitaryActivities_AspNetUsers_AppUserId",
+                        name: "FK_MilitaryPlans_AspNetUsers_AppUserId",
                         column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -213,8 +214,8 @@ namespace DAL.EF.App.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_MilitaryActivities_AppUserId",
-                table: "MilitaryActivities",
+                name: "IX_MilitaryPlans_AppUserId",
+                table: "MilitaryPlans",
                 column: "AppUserId");
         }
 
@@ -237,7 +238,7 @@ namespace DAL.EF.App.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "MilitaryActivities");
+                name: "MilitaryPlans");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
