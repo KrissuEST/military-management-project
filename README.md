@@ -30,9 +30,9 @@ dotnet tool update --global dotnet-aspnet-codegenerator
 
 cd WebApp
 # MVC
-dotnet aspnet-codegenerator controller -m TrainingPlan -name TrainingPlansController -outDir Controllers -dc ApplicationDbContext  -udl --referenceScriptLibraries -f
+dotnet aspnet-codegenerator controller -m MilitaryPlan -name MilitaryPlansController -outDir Controllers -dc ApplicationDbContext  -udl --referenceScriptLibraries -f
 # Rest API
-dotnet aspnet-codegenerator controller -m TrainingPlan -name TrainingPlansController -outDir ApiControllers -api -dc ApplicationDbContext  -udl -f
+dotnet aspnet-codegenerator controller -m MilitaryPlan -name TrainingPlansController -outDir ApiControllers -api -dc ApplicationDbContext  -udl -f
 ~~~
 
 
