@@ -26,6 +26,11 @@
 
     <ItemGroup>
       <ProjectReference Include="..\DAL.EF.App\DAL.EF.App.csproj" />
+      <ProjectReference Include="..\Helpers.Base\Helpers.Base.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Areas\Identity\" />
     </ItemGroup>
 
 </Project>

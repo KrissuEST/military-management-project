@@ -1,3 +1,4 @@
+using DAL.Contracts.App;
 using DAL.EF.App;
 using DAL.EF.App.Seeding;
 using Domain.App.Identity;
@@ -11,10 +12,19 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));   // Here not using UseSqlite but UseNpgsql, it kicked error away.
+
+// Register our UOW with scoped lifecycle.
+// IAppUOW will be added to injection dependency engine with scoped lifecycle
+// and tells to system when IAppUOW is asked pls go and create AppUOW. 
+// Actual implementation comes from AppUOW.
+builder.Services.AddScoped<IAppUOW, AppUOW>();
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services
-    .AddIdentity<AppUser, AppRole>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddIdentity<AppUser, AppRole>(
+        options => options.SignIn.RequireConfirmedAccount = false
+        )
     //.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddDefaultTokenProviders()
     .AddDefaultUI()

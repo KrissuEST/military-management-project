@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using DAL.Contracts.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,28 +11,32 @@ using DAL.EF.App;
 using DAL.EF.App.Repositories;
 using Domain.App;
 using Domain.App.Identity;
+using Helpers.Base;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
 namespace WebApp.Controllers
 {
+    [Authorize]   // Only logged in user can do anything on the page.
     public class MilitaryPlansController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly MilitaryPlanRepository _repository;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IAppUOW _uow;
 
-        public MilitaryPlansController(ApplicationDbContext context, UserManager<AppUser> userManager)
+        public MilitaryPlansController(
+            UserManager<AppUser> userManager, 
+            IAppUOW uow)
         {
-            _context = context;
             _userManager = userManager;
-            _repository = new MilitaryPlanRepository(_context);
+            _uow = uow;
         }
 
         // All CRUD methods here
         // GET: MilitaryPlans
         public async Task<IActionResult> Index()
         {
-            var vm = await _repository.AllAsync();
+            var vm = await 
+                _uow.MilitaryPlanRepository.AllAsync(User.GetUserId());
             return View(vm);
         }
 
@@ -42,7 +48,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var militaryPlan = await _repository.FindAsync(id.Value);
+            var militaryPlan = await _uow.MilitaryPlanRepository.FindAsync(id.Value);
             
             if (militaryPlan == null)
             {
@@ -55,7 +61,6 @@ namespace WebApp.Controllers
         // GET: MilitaryPlans/Create
         public IActionResult Create()
         {
-            ViewData["AppUserId"] = GetUserSelectList();
             return View();
         }
 
@@ -66,16 +71,16 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(MilitaryPlan militaryPlan)
         {
+            militaryPlan.AppUserId = User.GetUserId();
+            
             if (ModelState.IsValid)
             {
-                _repository.Add(militaryPlan);   //database will take care of it
+                _uow.MilitaryPlanRepository.Add(militaryPlan);   //database will take care of it
                 
-                //TODO??? where should this be 
-                await _context.SaveChangesAsync();
+                await _uow.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = GetUserSelectList(militaryPlan.AppUserId);
             
             return View(militaryPlan);
         }
@@ -88,12 +93,11 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var militaryPlan = await _repository.FindAsync(id.Value);
+            var militaryPlan = await _uow.MilitaryPlanRepository.FindAsync(id.Value);
             if (militaryPlan == null)
             {
                 return NotFound();
             }
-            ViewData["AppUserId"] = GetUserSelectList(militaryPlan.AppUserId);
             
             return View(militaryPlan);
         }
@@ -105,6 +109,7 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, MilitaryPlan militaryPlan)
         {
+            // TODO: check the ownership before edit!!
             if (id != militaryPlan.Id)
             {
                 return NotFound();
@@ -112,12 +117,13 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                _repository.Update(militaryPlan);
-                //TODO???
-                await _context.SaveChangesAsync();
+                militaryPlan.AppUserId = User.GetUserId();
+                
+                _uow.MilitaryPlanRepository.Update(militaryPlan);
+                await _uow.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = GetUserSelectList(militaryPlan.AppUserId);
             
             return View(militaryPlan);
         }
@@ -130,7 +136,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var militaryPlan = await _repository.FindAsync(id.Value);
+            var militaryPlan = await _uow.MilitaryPlanRepository.FindAsync(id.Value);
             
             if (militaryPlan == null)
             {
@@ -145,9 +151,9 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            await _repository.RemoveAsync(id);
-            //TODO???
-            await _context.SaveChangesAsync();
+            await _uow.MilitaryPlanRepository.RemoveAsync(id);
+            await _uow.SaveChangesAsync();
+            
             return RedirectToAction(nameof(Index));
         }
         

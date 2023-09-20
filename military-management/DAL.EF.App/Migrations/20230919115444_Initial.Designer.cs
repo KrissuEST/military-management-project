@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DAL.EF.App.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230622142651_Initial")]
+    [Migration("20230919115444_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -71,6 +71,16 @@ namespace DAL.EF.App.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");

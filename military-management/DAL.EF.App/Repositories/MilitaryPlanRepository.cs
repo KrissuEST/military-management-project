@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.EF.App.Repositories;
 
-public class MilitaryPlanRepository : EFBaseRepository<MilitaryPlan, ApplicationDbContext>, IMilitaryPlanRepository  // Implements IMilitaryPlanRepository
+public class MilitaryPlanRepository : 
+    EFBaseRepository<MilitaryPlan, ApplicationDbContext>, IMilitaryPlanRepository  // Implements IMilitaryPlanRepository
 {
     public MilitaryPlanRepository(ApplicationDbContext dataContext) : base(dataContext)  // Constructor
     {
@@ -18,6 +19,15 @@ public class MilitaryPlanRepository : EFBaseRepository<MilitaryPlan, Application
             .OrderBy(e => e.PlanName)
             .ToListAsync();
     }
+    
+    public virtual async Task<IEnumerable<MilitaryPlan>> AllAsync(Guid userId)
+    {
+        return await RepositoryDbSet
+            .Include(e => e.AppUser)
+            .OrderBy(e => e.PlanName)
+            .Where(t => t.AppUserId == userId)
+            .ToListAsync();
+    }
 
     public override async Task<MilitaryPlan?> FindAsync(Guid id)
     {
@@ -25,4 +35,5 @@ public class MilitaryPlanRepository : EFBaseRepository<MilitaryPlan, Application
             .Include(m => m.AppUser)
             .FirstOrDefaultAsync(m => m.Id == id);
     }
+    
 }

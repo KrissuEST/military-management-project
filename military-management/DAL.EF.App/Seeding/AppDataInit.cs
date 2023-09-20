@@ -32,6 +32,8 @@ public static class AppDataInit
                 Id = userData.id,
                 Email = userData.email,
                 UserName = userData.email,
+                FirstName = "Admin",
+                LastName = "App",
                 EmailConfirmed = true,
             };
             //creating that user

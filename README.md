@@ -36,9 +36,9 @@ dotnet aspnet-codegenerator controller -m MilitaryPlan -name TrainingPlansContro
 ~~~
 
 
-Generate Identity UI
+Generate Identity UI, generating pages
 
 ~~~bash
 cd WebApp
-dotnet aspnet-codegenerator identity -dc DAL.EF.App.ApplicationDbContext --userClass AppUser -f 
+dotnet aspnet-codegenerator identity -dc DAL.EF.App.ApplicationDbContext --userClass AppUser -f
 ~~~
