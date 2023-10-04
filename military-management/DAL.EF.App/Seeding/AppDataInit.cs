@@ -8,6 +8,7 @@ namespace DAL.EF.App.Seeding;
 public static class AppDataInit
 {
     private static Guid adminId = Guid.Parse("1eb6ca21-9f2e-4de2-ac43-e14c40f0f1df");
+    
     // Drop DB method
     public static void DropDatabase(ApplicationDbContext context)
     {
@@ -38,7 +39,7 @@ public static class AppDataInit
             };
             //creating that user
             var result = userManager.CreateAsync(user, userData.pwd).Result; //result immediately
-            if (!result.Succeeded)
+            if (!result.Succeeded)  // If result not positive
             {
                 throw new ApplicationException(message: "Cannot seed users");  
                         //(message: $"Cannot seed users, {result.ToString()}"); - nii saab logida
@@ -54,11 +55,15 @@ public static class AppDataInit
     
     private static void SeedAppDataMilitaryPlan(ApplicationDbContext context)
     {
-        if (context.MilitaryPlans.Any()) return;
+        if (context.MilitaryPlans.Any()) return;  // If any records in db then just return, don't do anything.
 
+        // If db was empty, then insert first record there.
         context.MilitaryPlans.Add(new MilitaryPlan()
             {
                 PlanName = "Test Plan",
+              //  PlanLocation = "Test location",
+              //  PlanOccurrenceTime = DateTime.Today,
+              //  PlanDescription = "Test description",
                 AppUserId = adminId
             }
         );

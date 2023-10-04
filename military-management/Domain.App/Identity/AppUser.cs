@@ -14,4 +14,6 @@ public class AppUser : IdentityUser<Guid>, IDomainEntityId   // It have string b
     public string LastName { get; set; } = default!;
     
     public ICollection<MilitaryPlan>? MilitaryActivities { get; set; }  //? - nullable
+    
+    public ICollection<AppRefreshToken>? AppRefreshTokens { get; set; }
 }

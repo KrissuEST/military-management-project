@@ -1,15 +1,18 @@
+using System.Text;
 using DAL.Contracts.App;
 using DAL.EF.App;
 using DAL.EF.App.Seeding;
 using Domain.App.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+// Here is dependency injection engine
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));   // Here not using UseSqlite but UseNpgsql, it kicked error away.
 
@@ -30,13 +33,41 @@ builder.Services
     .AddDefaultUI()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+// our custom stuff here
+builder.Services
+    .AddAuthentication()
+    .AddCookie(options => { options.SlidingExpiration = true; })
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = false;
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidIssuer = builder.Configuration.GetValue<string>("JWT:Issuer")!,  // true by default
+            ValidAudience = builder.Configuration.GetValue<string>("JWT:Audience")!, // true by default
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JWT:Key")!)),
+            ClockSkew = TimeSpan.Zero,
+        };
+    });
+
 builder.Services.AddControllersWithViews();
 
-//Dependency injection stuff and setting up the system
-// =================================== 
-var app = builder.Build();  //middle point of configuration and setting up system
+// add automapper configurations
+builder.Services.AddAutoMapper(
+    typeof(Public.DTO.AutoMapperConfig)
+);
+
+// Dependency injection stuff and setting up the system
+
+
 // ===================================
-// webserver set up, set up database stuff and seed initial data
+var app = builder.Build();   //middle point of configuration and setting up the system
+// ===================================
+
+
+// Webserver set up, set up database stuff and seed initial data
+
 SetupAppData(app, app.Environment, app.Configuration);
 
 // Configure the HTTP request pipeline.
@@ -68,7 +99,6 @@ app.Run();
 
 static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment environment, IConfiguration configuration)
 {
-    
     // using - we don't need to use dispose, fancy technique
     // using - when method ends, it's automatically disposed to us
     // Dependency injection engine here
@@ -91,7 +121,7 @@ static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment environmen
         throw new ApplicationException("Problem in services. Can't initialize UserManager or RoleManager.");
     }
 
-    //logging stuff out correctly
+    // logging stuff out correctly
     var logger = serviceScope.ServiceProvider.GetService<ILogger<IApplicationBuilder>>();
     if (logger == null)
     {
@@ -100,7 +130,7 @@ static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment environmen
     // If database is InMemory type.
     if (context.Database.ProviderName!.Contains("InMemory"))
     {
-        return;
+        return;   // Don't do anything.
     }
     
     // TODO: wait for DB connection
@@ -133,5 +163,8 @@ static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment environmen
         logger.LogInformation("Seed app data");
         AppDataInit.SeedAppData(context);
     }
+}
 
+public partial class Program
+{
 }

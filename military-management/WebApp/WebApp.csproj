@@ -8,6 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.11" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.5" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.5" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.5" />
@@ -27,6 +29,7 @@
     <ItemGroup>
       <ProjectReference Include="..\DAL.EF.App\DAL.EF.App.csproj" />
       <ProjectReference Include="..\Helpers.Base\Helpers.Base.csproj" />
+      <ProjectReference Include="..\Public.DTO\Public.DTO.csproj" />
     </ItemGroup>
 
     <ItemGroup>

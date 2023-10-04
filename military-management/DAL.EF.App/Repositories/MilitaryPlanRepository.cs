@@ -1,4 +1,5 @@
 ﻿using DAL.Contracts.App;
+using DAL.DTO;
 using DAL.EF.Base;
 using Domain.App;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,7 @@ public class MilitaryPlanRepository :
     {
         return await RepositoryDbSet
             .Include(e => e.AppUser)
+            .Include(t => t.PlanPersons)
             .OrderBy(e => e.PlanName)
             .Where(t => t.AppUserId == userId)
             .ToListAsync();
@@ -36,4 +38,26 @@ public class MilitaryPlanRepository :
             .FirstOrDefaultAsync(m => m.Id == id);
     }
     
+    public virtual async Task<MilitaryPlan?> FindAsync(Guid id, Guid userId)
+    {
+        return await RepositoryDbSet
+            .Include(m => m.AppUser)
+            .FirstOrDefaultAsync(m => m.Id == id && m.AppUserId == userId);
+    }
+
+    public async Task<IEnumerable<MilitaryPlanWithPersonCount>> AllWithPlansCountAsync(Guid userId)
+    {
+        return await RepositoryDbSet
+            .Include(e => e.AppUser)
+            .Include(t => t.PlanPersons)
+            .OrderBy(e => e.PlanName)
+            .Where(t => t.AppUserId == userId)
+            .Select(t => new MilitaryPlanWithPersonCount()
+            {
+                Id = t.Id,
+                PlanName = t.PlanName,
+                PersonCount = t.PlanPersons!.Count
+            })
+            .ToListAsync();
+    }
 }

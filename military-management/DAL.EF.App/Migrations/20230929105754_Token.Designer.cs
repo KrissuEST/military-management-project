@@ -3,6 +3,7 @@ using System;
 using DAL.EF.App;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DAL.EF.App.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230929105754_Token")]
+    partial class Token
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,7 +53,7 @@ namespace DAL.EF.App.Migrations
 
                     b.HasIndex("AppUserId");
 
-                    b.ToTable("AppRefreshTokens");
+                    b.ToTable("AppRefreshToken");
                 });
 
             modelBuilder.Entity("Domain.App.Identity.AppRole", b =>
@@ -164,16 +167,6 @@ namespace DAL.EF.App.Migrations
                     b.Property<Guid>("AppUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("PlanDescription")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("PlanLocation")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
-
                     b.Property<string>("PlanName")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -184,42 +177,6 @@ namespace DAL.EF.App.Migrations
                     b.HasIndex("AppUserId");
 
                     b.ToTable("MilitaryPlans");
-                });
-
-            modelBuilder.Entity("Domain.App.PlanPerson", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("MilitaryPlanId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("PersonBirthday")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("PersonExtraInfo")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PersonFirstName")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
-
-                    b.Property<long>("PersonIdNumber")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("PersonLastName")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MilitaryPlanId");
-
-                    b.ToTable("PlanPersons");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -347,17 +304,6 @@ namespace DAL.EF.App.Migrations
                     b.Navigation("AppUser");
                 });
 
-            modelBuilder.Entity("Domain.App.PlanPerson", b =>
-                {
-                    b.HasOne("Domain.App.MilitaryPlan", "MilitaryPlan")
-                        .WithMany("PlanPersons")
-                        .HasForeignKey("MilitaryPlanId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("MilitaryPlan");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Domain.App.Identity.AppRole", null)
@@ -414,11 +360,6 @@ namespace DAL.EF.App.Migrations
                     b.Navigation("AppRefreshTokens");
 
                     b.Navigation("MilitaryActivities");
-                });
-
-            modelBuilder.Entity("Domain.App.MilitaryPlan", b =>
-                {
-                    b.Navigation("PlanPersons");
                 });
 #pragma warning restore 612, 618
         }
