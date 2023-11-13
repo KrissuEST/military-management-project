@@ -4,7 +4,7 @@ using DAL.Base;
 namespace Public.DTO.Mappers;
 
 // BaseMapper<output, input>
-public class MilitaryPlanMapper : BaseMapper<Domain.App.MilitaryPlan, Public.DTO.v1.MilitaryPlan>
+public class MilitaryPlanMapper : BaseMapper<BLL.DTO.MilitaryPlan, Public.DTO.v1.MilitaryPlan>
 {
     public MilitaryPlanMapper(IMapper mapper) : base(mapper)
     {

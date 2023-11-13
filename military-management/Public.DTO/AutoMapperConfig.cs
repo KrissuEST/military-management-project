@@ -7,7 +7,7 @@ public class AutoMapperConfig : Profile
     public AutoMapperConfig()
     {
         // Map from this to this and other way around.
-        CreateMap<Domain.App.MilitaryPlan, Public.DTO.v1.MilitaryPlan>()
+        CreateMap<BLL.DTO.MilitaryPlan, Public.DTO.v1.MilitaryPlan>()
             .ForMember(
                 dest => dest.PersonCount,
                 options => 

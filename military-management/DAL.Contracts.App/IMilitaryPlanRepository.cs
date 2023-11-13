@@ -4,11 +4,19 @@ using Domain.App;
 
 namespace DAL.Contracts.App;
 
-public interface IMilitaryPlanRepository : IBaseRepository<MilitaryPlan>
+public interface IMilitaryPlanRepository : IBaseRepository<MilitaryPlan>, IMilitaryPlanRepositoryCustom<MilitaryPlan>
 {
-    public Task<IEnumerable<MilitaryPlan>> AllAsync(Guid userId);
+    // add here custom methods for repo only
+}
 
-    public Task<MilitaryPlan?> FindAsync(Guid id, Guid userId);
-    
+public interface IMilitaryPlanRepositoryCustom<TEntity>
+{
+    // add here shared methods between repo and service
+    public Task<IEnumerable<TEntity>> AllAsync(Guid userId);
+    public Task<TEntity?> FindAsync(Guid id, Guid userId);
+    // Task<MilitaryPlan?> RemoveAsync(Guid id, Guid userId);
+    // public - tegelt pole vaja
+    // Task<bool> IsOwnedByUserAsync(Guid id, Guid userId);
     public Task<IEnumerable<MilitaryPlanWithPersonCount>> AllWithPlansCountAsync(Guid userId);
+    
 }

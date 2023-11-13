@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using DAL.Contracts.App;
-using Microsoft.AspNetCore.Http;
+using BLL.Contracts.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.EF.App;
-using Domain.App;
 using Helpers.Base;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -23,13 +21,13 @@ namespace WebApp.ApiControllers
     {
         private readonly ApplicationDbContext _context;   // not needed in the future
         
-        private readonly IAppUOW _uow;
+        private readonly IAppBLL _bll;
         private readonly MilitaryPlanMapper _mapper;
 
-        public MilitaryPlansController(ApplicationDbContext context, IAppUOW uow, IMapper autoMapper)
+        public MilitaryPlansController(ApplicationDbContext context, IAppBLL bll, IMapper autoMapper)
         {
             _context = context;   // here too
-            _uow = uow;
+            _bll = bll;
             _mapper = new MilitaryPlanMapper(autoMapper);
         }
 
@@ -39,7 +37,7 @@ namespace WebApp.ApiControllers
         {
             // Only returning military plans to that specific user.
             var data = await 
-                _uow.MilitaryPlanRepository.AllWithPlansCountAsync(User.GetUserId());
+                _bll.MilitaryPlanService.AllWithPlansCountAsync(User.GetUserId());
 
             var result = data
                 .Select(e => _mapper.MapWithCount(e))
@@ -52,7 +50,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Public.DTO.v1.MilitaryPlan>> GetMilitaryPlan(Guid id)
         {
-            var militaryPlan = await _uow.MilitaryPlanRepository.FindAsync(id, User.GetUserId());
+            var militaryPlan = await _bll.MilitaryPlanService.FindAsync(id, User.GetUserId());
 
             if (militaryPlan == null)
             {
@@ -67,30 +65,24 @@ namespace WebApp.ApiControllers
         // PUT: api/MilitaryPlans/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMilitaryPlan(Guid id, MilitaryPlan militaryPlan)
+        public async Task<IActionResult> PutMilitaryPlan(Guid id, Public.DTO.v1.MilitaryPlan militaryPlan)
         {
             if (id != militaryPlan.Id)
             {
                 return BadRequest();
             }
+            
+            // Peaks siin olema, tuleb üle vaadata
+            
+            // if (!await _bll.MilitaryPlanService.IsOwnedByUserAsync(militaryPlan.Id, User.GetUserId()))
+            // {
+            //     return BadRequest("No hacking (bad user id)!");
+            // }
 
-            _context.Entry(militaryPlan).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MilitaryPlanExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            var bllMilitaryPlan = _mapper.Map(militaryPlan);
+            bllMilitaryPlan!.AppUserId = User.GetUserId();
+            _bll.MilitaryPlanService.Update(bllMilitaryPlan);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
         }
@@ -98,12 +90,13 @@ namespace WebApp.ApiControllers
         // POST: api/MilitaryPlans
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<MilitaryPlan>> PostMilitaryPlan(MilitaryPlan militaryPlan)
+        public async Task<ActionResult<Public.DTO.v1.MilitaryPlan>> PostMilitaryPlan(Public.DTO.v1.MilitaryPlan militaryPlan)
         {
-            _context.MilitaryPlans.Add(militaryPlan);
-            _uow.MilitaryPlanRepository.Add(militaryPlan);
-                
-            await _uow.SaveChangesAsync();
+            var bllMilitaryPlan = _mapper.Map(militaryPlan);
+
+            bllMilitaryPlan!.AppUserId = User.GetUserId();
+            _bll.MilitaryPlanService.Add(bllMilitaryPlan);
+            await _bll.SaveChangesAsync();
 
             return CreatedAtAction("GetMilitaryPlan", new { id = militaryPlan.Id }, militaryPlan);
         }

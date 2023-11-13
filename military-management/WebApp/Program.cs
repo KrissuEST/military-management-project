@@ -1,11 +1,18 @@
 using System.Text;
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
+using BLL.App;
+using BLL.Contracts.App;
 using DAL.Contracts.App;
 using DAL.EF.App;
 using DAL.EF.App.Seeding;
 using Domain.App.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using WebApp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +28,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // and tells to system when IAppUOW is asked pls go and create AppUOW. 
 // Actual implementation comes from AppUOW.
 builder.Services.AddScoped<IAppUOW, AppUOW>();
+builder.Services.AddScoped<IAppBLL, AppBLL>();
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -55,8 +63,32 @@ builder.Services.AddControllersWithViews();
 
 // add automapper configurations
 builder.Services.AddAutoMapper(
+    typeof(BLL.App.AutoMapperConfig),
     typeof(Public.DTO.AutoMapperConfig)
 );
+
+
+var apiVersioningBuilder = builder.Services.AddApiVersioning(options =>
+{
+    options.ReportApiVersions = true;
+    // in case of no explicit version
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+});
+
+apiVersioningBuilder.AddApiExplorer(options =>
+{
+    // add the versioned api explorer, which also adds IApiVersionDescriptionProvider service
+    // note: the specified format code will format the version as "'v'major[.minor][-status]"
+    options.GroupNameFormat = "'v'VVV";
+
+    // note: this option is only necessary when versioning by url segment. the SubstitutionFormat
+    // can also be used to control the format of the API version in route templates
+    options.SubstituteApiVersionInUrl = true;
+});
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+builder.Services.AddSwaggerGen();
 
 // Dependency injection stuff and setting up the system
 
@@ -88,6 +120,19 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+    {
+        var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+        foreach (var description in provider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint(
+                $"/swagger/{description.GroupName}/swagger.json",
+                description.GroupName
+            );
+        }
+    });
 
 app.MapControllerRoute(
     name: "default",
