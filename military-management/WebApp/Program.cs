@@ -61,6 +61,18 @@ builder.Services
 
 builder.Services.AddControllersWithViews();
 
+// for two different localhosts, that they can communicate with each other
+// routing here
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsAllowAll", policy =>
+    {
+        policy.AllowAnyHeader();  // headers control
+        policy.AllowAnyMethod();  // post, get, put control
+        policy.AllowAnyOrigin();  // host control
+    });
+});
+
 // add automapper configurations
 builder.Services.AddAutoMapper(
     typeof(BLL.App.AutoMapperConfig),
@@ -119,6 +131,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseCors("CorsAllowAll");
+
 app.UseAuthorization();
 
 app.UseSwagger();
@@ -133,10 +147,15 @@ app.UseSwaggerUI(options =>
             );
         }
     });
+//Area juures uus
+// app.MapControllerRoute(
+//     name: "area",
+//     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.MapRazorPages();
 
 // Start up the web server and wait for requests.

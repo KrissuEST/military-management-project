@@ -51,6 +51,8 @@ dotnet tool install --global dotnet-aspnet-codegenerator
 dotnet tool update --global dotnet-aspnet-codegenerator
 
 cd WebApp
+# Reame vaja täiendada!
+# Use area
 # MVC
 dotnet aspnet-codegenerator controller -m MilitaryPlan -name MilitaryPlansController -outDir Controllers -dc ApplicationDbContext  -udl --referenceScriptLibraries -f
 # Rest API, generating controllers

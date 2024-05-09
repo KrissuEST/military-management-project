@@ -9,6 +9,14 @@ public class MilitaryPlan : DomainEntityId
 {
     [MaxLength(150)]
     public string PlanName { get; set; } = default!;
+    
+    public DateTime PlanDateTime { get; set; } = default!;  // New
+
+    [MaxLength(150)]
+    public string PlanLocation { get; set; } = default!;  // New
+    
+    [MaxLength(400)]
+    public string PlanDescription { get; set; } = default!;  // New
    
     // One-to-many relationship
     public Guid AppUserId { get; set; }

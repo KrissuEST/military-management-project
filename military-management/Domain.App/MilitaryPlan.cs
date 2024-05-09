@@ -12,12 +12,14 @@ public class MilitaryPlan : DomainEntityId
     // Military activity have one one owner but may have different military activities.
     [MaxLength(128)]
     public string PlanName { get; set; } = default!;
-
-    // [MaxLength(150)]
-    // public string PlanLocation { get; set; } = default!;
     
-    // [MaxLength(256)]
-    // public string PlanDescription { get; set; } = default!;
+    public DateTime PlanDateTime { get; set; } = default!;  // New
+
+    [MaxLength(150)]
+    public string PlanLocation { get; set; } = default!;  // New
+    
+    [MaxLength(400)]
+    public string PlanDescription { get; set; } = default!;  // New
    
     // One-to-many relationship
     public Guid AppUserId { get; set; }

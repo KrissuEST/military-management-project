@@ -2,12 +2,14 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "WebApp\WebApp.csproj", "{661134EA-FF95-42B4-B64B-7CF1E86434A1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{F9BAAB0D-5535-4C9C-B461-8627B1A40DFC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F9BAAB0D-5535-4C9C-B461-8627B1A40DFC}"
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
 		..\README.md = ..\README.md
 		..\docker-compose.yml = ..\docker-compose.yml
 		..\Directory.Build.props = ..\Directory.Build.props
+		..\Dockerfile = ..\Dockerfile
+		..\.dockerignore = ..\.dockerignore
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "APP", "APP", "{E406F2F5-F97C-4C8E-A21C-950CE6FE2271}"

@@ -8,7 +8,7 @@ public class PlanPerson : DomainEntityId
     
     public string PersonLastName { get; set; } = default!;
 
-    public DateTime PersonBirthday { get; set; }
+    public bool ActiveSoldierOrOfficial { get; set; } = default!; // new
 
     public long PersonIdNumber { get; set; }
 

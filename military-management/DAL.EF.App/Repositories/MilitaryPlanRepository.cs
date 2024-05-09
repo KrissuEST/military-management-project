@@ -24,8 +24,8 @@ public class MilitaryPlanRepository :
     public virtual async Task<IEnumerable<MilitaryPlan>> AllAsync(Guid userId)
     {
         return await RepositoryDbSet
-            .Include(e => e.AppUser)
-            .Include(t => t.PlanPersons)
+            // .Include(e => e.AppUser)   // kick this out
+           // .Include(t => t.PlanPersons)  // should not be here
             .OrderBy(e => e.PlanName)
             .Where(t => t.AppUserId == userId)
             .ToListAsync();

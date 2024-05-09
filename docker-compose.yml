@@ -1,6 +1,20 @@
-version: "3.9"
+version: "3.9"    # pole vaja enam tulevikus
 
 services:
+  military-app:
+    container_name: military-app
+    build:
+      context: ./military-management
+      dockerfile: Dockerfile
+    platform: linux/amd64,linux/arm/v8   # A.Kaveril nii
+    ports:
+      # external:internal
+      - "8000:80"
+    depends_on:
+      - military-db
+    environment:
+      - ConnectionStrings:DefaultConnection=Host=military-db:5432;Database=military-db;Username=postgres;Password=postgres
+  
   military-db:
     container_name: military-db
     image: "postgres:15.3-bullseye"
